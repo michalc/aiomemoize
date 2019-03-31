@@ -8,7 +8,7 @@ def long_description():
 
 setuptools.setup(
     name='aiomemoize',
-    version='0.0.0',
+    version='0.0.1',
     author='Michal Charemza',
     author_email='michal@charemza.name',
     description='Memoize asyncio Python function calls',
