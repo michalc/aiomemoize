@@ -12,7 +12,7 @@ pip install aiomemoize
 
 ## Usage
 
-For a coroutine whose arguments are hashable, you can create a _memoized_ version by passing it to `memoize`. Any calls to this version that have the same arguments will result in only a _single_ run of original coroutine.
+For a coroutine whose arguments are hashable, you can create a _memoized_ version by passing it to `memoize`. This returns a tuple of the memoized function, and a function to invalidate the cache on a per-item basis.
 
 For example, the below
 
