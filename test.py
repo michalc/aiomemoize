@@ -133,6 +133,37 @@ class TestMemoize(TestCase):
         ])
 
     @async_test
+    async def test_identical_sequential_invalidate(self):
+        loop = asyncio.get_event_loop()
+        mock = Mock()
+        results = ['d', 'c', 'b', 'a']
+
+        async def func(*args, **kwargs):
+            mock(*args, **kwargs)
+            return results.pop()
+
+        memoized, invalidate = memoize(func)
+
+        task_a = asyncio.ensure_future(memoized(10, 20, a='val_a', b='val_b_a'))
+        task_b = asyncio.ensure_future(memoized(10, 20, a='val_a', b='val_b_b'))
+        task_a_result = await task_a
+        task_a_result = await task_a
+
+        invalidate(10, 20, a='val_a', b='val_b_a')
+        task_c = asyncio.ensure_future(memoized(10, 20, a='val_a', b='val_b_a'))
+        task_d = asyncio.ensure_future(memoized(10, 20, a='val_a', b='val_b_b'))
+        task_c_result = await task_c
+        task_d_result = await task_d
+
+        self.assertEqual(task_c_result, 'c')
+        self.assertEqual(task_d_result, 'b')
+        self.assertEqual(mock.mock_calls, [
+            call(10, 20, a='val_a', b='val_b_a'),
+            call(10, 20, a='val_a', b='val_b_b'),
+            call(10, 20, a='val_a', b='val_b_a'),
+        ])
+
+    @async_test
     async def test_identical_concurrent_memoized_exception(self):
         loop = asyncio.get_event_loop()
         mock = Mock()
