@@ -8,9 +8,9 @@ def memoize(func):
     async def cached(*args, **kwargs):
         key = (args, tuple(kwargs.items()))
 
-        try:
+        if key in cache:
             future = cache[key]
-        except KeyError:
+        else:
             future = asyncio.Future()
             cache[key] = future
 
